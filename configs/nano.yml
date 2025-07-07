@@ -1,0 +1,37 @@
+run_name: ts_nano_512ctx         # used by your training script for logging
+
+paths:
+  raw_data: ./storage/raw_datasets
+  processed_data: ./storage/tokens
+  tokenizer_path: ./storage/tokens/tokenizer
+  cache_dir: ./storage/hf_datasets
+
+data:
+  datasets:
+    - name: tinystories_nano
+      url: https://huggingface.co/datasets/roneneldan/TinyStories
+      path: ./storage/raw_datasets/tinystories_nano.parquet   
+      format: parquet                                         
+      split: train
+      max_samples: 20000          # ≈2.5 M tokens
+      weight: 1.0                 # only relevant when mixing several sets
+
+  tokenizer:
+    # vocab_size: 32768             
+    vocab_size: 30008             # multiple-of-64
+    model_type: bpe
+    special_tokens:
+      - "<|endoftext|>"
+      - "<|pad|>"
+
+  preprocessing:
+    max_length: 512               # window size
+    min_length: 16                # discard sequences shorter than this
+    stride: 256                   # 50 % overlap
+    train_split: 0.95
+    val_split: 0.05
+
+  storage:
+    format: numpy
+    chunk_size: 10000             # sequences per .npz
+    compression: gzip

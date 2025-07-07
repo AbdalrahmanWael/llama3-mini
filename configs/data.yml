@@ -1,0 +1,48 @@
+data:
+  datasets:
+    - name: "tinystories"
+      url: "https://huggingface.co/datasets/roneneldan/TinyStories"
+      max_samples: 50000  # ~1GB
+      weight: 0.4
+    
+    - name: "slimpajama_sample"
+      url: "https://huggingface.co/datasets/cerebras/SlimPajama-627B"
+      max_samples: 20000  # ~2GB, high quality web + books
+      weight: 0.6
+    
+    - name: "ultrachat_small"
+      url: "https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k"
+      split: "train_gen"
+      max_samples: 5000  # ~100MB, 25M tokens
+      weight: 0.0  # Only for chat fine-tuning
+  
+  # Tokenizer settings
+  tokenizer:
+    vocab_size: 32000
+    model_type: "bpe"
+    special_tokens:
+      - "<|endoftext|>"
+      - "<|im_start|>"
+      - "<|im_end|>"
+      - "<|pad|>"
+    
+  # Preprocessing
+  preprocessing:
+    max_length: 2048
+    stride: 1024  # For overlapping chunks
+    min_length: 512  # Discard shorter sequences
+    train_split: 0.95
+    val_split: 0.05
+    
+  # Storage
+  storage:
+    format: "numpy"  # or "arrow", "hdf5"
+    chunk_size: 10000  # sequences per file
+    compression: "gzip"
+    
+# File paths (matching your storage structure)
+paths:
+  raw_data: "./storage/raw_datasets"
+  processed_data: "./storage/tokens"
+  tokenizer_path: "./storage/tokens/tokenizer"
+  cache_dir: "./storage/hf_datasets"
